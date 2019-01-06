@@ -1,0 +1,83 @@
+<html>
+	<head>
+	<title>particles</title>
+		<style type ="text/css">
+		canvas { background-color: white; }
+		html * { padding: 0px; margin: 0px;}
+		</style>
+		<script type ="text/javascript" >
+			var blobImgArray = [];
+			var blobArray = [];
+			var messageY = window.innerHeight;
+			var messageYTop = (window.innerHeight/2 - 500);
+			setInterval(draw, 50);
+			function draw() {
+				var blobImg = {
+					x : window.innerWidth/2 + randomRange(-100, 100),
+					y :window.innerHeight/2 + randomRange(-100, 100),
+					sizeWidth : randomRange(50, 100),
+					sizeHeight : randomRange(50, 100),
+					xSpeed : randomRange(-25,25),
+					ySpeed : randomRange(-25,25),
+					faceNo : randomRange(1, 3)
+				};
+				blobImgArray.push(blobImg);
+				if(blobImgArray.length > 200){
+					blobImgArray.shift();
+				}
+				var blob = {
+					x : window.innerWidth/2 + randomRange(-100, 100),
+					y : window.innerHeight/2 + randomRange(-100, 100),
+					sizeWidth : randomRange(0, 30),
+					sizeHeight : randomRange(0, 30),
+					r : randomRange(0, 255),
+					g : randomRange(0, 255),
+					b : randomRange(0, 255),
+					a : 0.3,
+					xSpeed : randomRange(-25,25),
+					ySpeed : randomRange(-25,25)
+				};
+				blobArray.push(blob);
+				if(blobArray.length > 200){
+					blobArray.shift();
+				}
+				var canvas = document.getElementById('particles');
+				if (canvas.getContext) {
+					var c = canvas.getContext('2d');
+					var img = new Image();
+					var messageImg = new Image();
+					canvas.width = window.innerWidth;
+					canvas.height = window.innerHeight;
+
+					messageImg.src = "message.png";
+					c.drawImage(messageImg, (window.innerWidth/2 - 375), messageY, 730, 500);
+					if(messageY > messageYTop){
+						messageY = messageY - 10;
+					}
+
+					for (var i = 0; i < blobImgArray.length; i++) {				
+						blobImg = blobImgArray[i];	
+						img.src = "face" + blobImg.faceNo + ".png";
+						c.drawImage(img, blobImg.x, blobImg.y, blobImg.sizeWidth, blobImg.sizeHeight);						
+						blobImg.x = blobImg.x + blobImg.xSpeed;
+						blobImg.y = blobImg.y + blobImg.ySpeed;
+
+					}
+					for (var i = 0; i < blobArray.length; i++) {
+						blob = blobArray[i];
+						c.fillStyle = 'rgba(' + blob.r + ', ' + blob.g + ', ' + blob.b + ', ' + blob.a + ')';
+						c.fillRect(blob.x, blob.y, blob.sizeWidth, blob.sizeHeight);
+						blob.x = blob.x + blob.xSpeed;
+						blob.y = blob.y + blob.ySpeed;
+					}
+				}
+			}
+			function randomRange(m,n) {
+				return ( Math.floor ( Math.random ( )*0.9999999999999999* (n - m + 1) + m) );
+				}
+		</script>
+	</head>
+	<body>
+		<canvas id="particles"></canvas>
+	</body>
+</html>
