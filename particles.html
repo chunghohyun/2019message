@@ -6,11 +6,34 @@
 		html * { padding: 0px; margin: 0px;}
 		</style>
 		<script type ="text/javascript" >
+
 			var blobImgArray = [];
 			var blobArray = [];
 			var messageY = window.innerHeight;
 			var messageYTop = (window.innerHeight/2 - 500);
-			setInterval(draw, 50);
+			var img = new Image();
+			var messageImg = new Image();
+			onload = function() {
+				setInterval(draw, 70);
+			};
+			function loadImages(sources, callback) {
+				var images = {};
+				var loadedImages = 0;
+				var numImages = 0;
+				// get num of sources
+				for(var src in sources) {
+					numImages++;
+				}
+				for(var src in sources) {
+					images[src] = new Image();
+					images[src].onload = function() {
+						if(++loadedImages >= numImages) {
+							callback(images);
+						}
+					};
+					images[src].src = sources[src];
+				}
+			}
 			function draw() {
 				var blobImg = {
 					x : window.innerWidth/2 + randomRange(-100, 100),
@@ -41,28 +64,14 @@
 				if(blobArray.length > 200){
 					blobArray.shift();
 				}
+
 				var canvas = document.getElementById('particles');
 				if (canvas.getContext) {
 					var c = canvas.getContext('2d');
-					var img = new Image();
-					var messageImg = new Image();
 					canvas.width = window.innerWidth;
 					canvas.height = window.innerHeight;
 
-					messageImg.src = "message.png";
-					c.drawImage(messageImg, (window.innerWidth/2 - 375), messageY, 730, 500);
-					if(messageY > messageYTop){
-						messageY = messageY - 10;
-					}
 
-					for (var i = 0; i < blobImgArray.length; i++) {				
-						blobImg = blobImgArray[i];	
-						img.src = "face" + blobImg.faceNo + ".png";
-						c.drawImage(img, blobImg.x, blobImg.y, blobImg.sizeWidth, blobImg.sizeHeight);						
-						blobImg.x = blobImg.x + blobImg.xSpeed;
-						blobImg.y = blobImg.y + blobImg.ySpeed;
-
-					}
 					for (var i = 0; i < blobArray.length; i++) {
 						blob = blobArray[i];
 						c.fillStyle = 'rgba(' + blob.r + ', ' + blob.g + ', ' + blob.b + ', ' + blob.a + ')';
@@ -70,11 +79,30 @@
 						blob.x = blob.x + blob.xSpeed;
 						blob.y = blob.y + blob.ySpeed;
 					}
+					img.src = "face" + blobImg.faceNo + ".png";
+					img.onload = function() {
+					for (var i = 0; i < blobImgArray.length; i++) {				
+						blobImg = blobImgArray[i];
+						c.drawImage(img, blobImg.x, blobImg.y, blobImg.sizeWidth, blobImg.sizeHeight);
+						blobImg.x = blobImg.x + blobImg.xSpeed;
+						blobImg.y = blobImg.y + blobImg.ySpeed;
+
+						}
+					}
+
+					messageImg.src = "message.png";
+					messageImg.onload = function() {
+						c.drawImage(messageImg, (window.innerWidth/2 - 375), messageY, 730, 500);
+					}
+					if(messageY > messageYTop){
+						messageY = messageY - 10;
+					}
 				}
+
 			}
 			function randomRange(m,n) {
 				return ( Math.floor ( Math.random ( )*0.9999999999999999* (n - m + 1) + m) );
-				}
+			}
 		</script>
 	</head>
 	<body>
